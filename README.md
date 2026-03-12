@@ -1,48 +1,79 @@
-# 📚 Challenge LiterAlura - Catálogo de Libros
+<h1 align="center">LiterAlura 📚</h1>
 
-Un catálogo de libros interactivo por consola que consume la API de Gutendex y almacena la información en una base de datos relacional. 
+<p align="center">
+  <i>Aplicación interactiva de consola desarrollada con Spring Boot para la búsqueda y almacenamiento de libros y autores.</i>
+</p>
 
----
+## 📖 Descripción del Proyecto
 
-## 📝 Descripción del Proyecto
+**LiterAlura** es una aplicación de línea de comandos (CLI) escrita en Java utilizando el ecosistema de **Spring Boot**. El propósito principal de este sistema es interactuar con la API pública de **[Gutendex](https://gutendex.com/)** para consultar información detallada de libros y autores, parsear las respuestas JSON y almacenar los registros de manera persistente en una base de datos relacional mediante **Spring Data JPA**.
 
-LiterAlura es una aplicación construida en Java con el framework Spring Boot. Su propósito es facilitar la búsqueda de libros literarios a través de una API pública, procesar los resultados en formato JSON y guardar tanto los libros como sus autores en una base de datos PostgreSQL. El sistema incluye validaciones para evitar registros duplicados y mantener la integridad de la base de datos.
+Este proyecto fue refactorizado aplicando buenas prácticas de desarrollo tales como el patrón de **Inyección de Dependencias (IoC)**, estructuración de entidades y repositorios, y el manejo idiomático de componentes en Spring (`@Component`, `@Service`).
 
-## ⚙️ Funcionalidades Principales
+## ✨ Características Principales
 
-El sistema despliega un menú interactivo en la consola con las siguientes opciones:
+El menú interactivo de consola permite realizar las siguientes acciones:
 
-1. **Buscar libro por título:** Consulta la API de Gutendex, extrae el primer resultado coincidente y guarda el libro y su autor en la base de datos local de forma relacional.
-2. **Listar libros registrados:** Consulta la base de datos y muestra todos los libros almacenados históricamente.
-3. **Listar autores registrados:** Muestra una lista de todos los autores que han sido guardados en el sistema.
-4. **Listar autores vivos en un determinado año:** Permite ingresar un año específico (ej. 1800) y mediante una consulta JPQL personalizada, devuelve los autores que estaban vivos en esa época.
-5. **Listar libros por idioma:** Filtra la base de datos y muestra los libros según el código de idioma seleccionado (`es`, `en`, `fr`, `pt`).
+1. **Buscar nuevo libro por nombre en la web:** Consulta en tiempo real la API de Gutendex y guarda el libro junto con su autor en la base de datos local.
+2. **Mostrar todos los libros guardados:** Lista todas las obras que se encuentran persistidas localmente.
+3. **Mostrar todos los autores guardados:** Lista todos los escritores cuyas obras han sido consultadas.
+4. **Consultar autores activos en determinado año:** Filtra la base de datos en busca de autores que estaban vivos en un año específico.
+5. **Buscar libros almacenados por lenguaje:** Permite filtrar los libros en la base de datos usando las siglas del idioma (por ejemplo: `es`, `en`, `fr`).
 
-## 🛠️ Tecnologías y Herramientas
+## 🛠️ Tecnologías y Herramientas Utilizadas
 
-* **Lenguaje:** Java (JDK 17+)
-* **Framework:** Spring Boot 3
-* **Base de Datos:** PostgreSQL
-* **ORM:** Spring Data JPA / Hibernate
-* **Gestor de dependencias:** Maven
-* **Procesamiento JSON:** Jackson (ObjectMapper)
-* **Peticiones HTTP:** Java `HttpClient` nativo
+*   **Java 17:** Lenguaje de desarrollo.
+*   **Spring Boot 3:** Framework base para inyección de dependencias (`CommandLineRunner`, `@Autowired`, `@Component`, `@Service`).
+*   **Spring Data JPA:** Interacción con la base de datos a través de repositorios (`JpaRepository`).
+*   **Hibernate:** Implementación de JPA para ORM.
+*   **Jackson:** Librería para la serialización y deserialización de las respuestas JSON provistas por la API (con `@JsonAlias` y `record` de Java).
+*   **Maven:** Herramienta para la gestión de dependencias y *build* del proyecto.
+*   **Base de Datos:** Configurada a través de *application.properties* (MySQL / PostgreSQL según el entorno).
 
-## 🚀 Instalación y Uso Local
+## 🗂️ Estructura del Proyecto
+
+```text
+src/main/java/com/example/demo/
+├── cli
+│   └── MenuConsola.java       # Menú interactivo y punto de inyección principal
+├── model
+│   ├── Autor.java             # Entidad JPA de Autores
+│   ├── Libro.java             # Entidad JPA de Libros
+│   ├── DatosAutor.java        # Record para mapeo JSON del Autor
+│   ├── DatosLibro.java        # Record para mapeo JSON del Libro
+│   └── DatosResultados.java   # Record envoltorio para respuestas de la API
+├── repository
+│   ├── AutorRepository.java   # Repositorio de Spring Data con consultas JPQL personalizadas
+│   └── LibroRepository.java   # Repositorio de Spring Data para la gestión de Libros
+├── service
+│   ├── ITransformadorJson.java
+│   ├── ServicioPeticiones.java # Servicio que expone HttpClient para invocar Gutendex
+│   └── TransformadorJson.java  # Implementación de Jackson ObjectMapper
+└── LiteraluraApplication.java  # Clase Main de arranque de Spring Boot
+```
+
+## 🚀 Instalación y Uso
 
 ### Prerrequisitos
-* Tener instalado Java 17 o superior.
-* Tener instalado PostgreSQL y el servidor en ejecución.
+- Tener instalado **Java 17** o superior.
+- Tener configurada una base de datos soportada por JPA de acuerdo a lo declarado en tu archivo `src/main/resources/application.properties`.
 
-### Configuración
-1. Clona este repositorio en tu máquina local:
-   `git clone https://github.com/tu-usuario/LiterAlura.git`
-2. Abre tu gestor de base de datos (ej. pgAdmin) y crea una base de datos vacía llamada `literalura`.
-3. Navega al archivo `src/main/resources/application.properties` y configura tus credenciales de PostgreSQL:
-   ```properties
-   spring.datasource.url=jdbc:postgresql://localhost:5432/literalura
-   spring.datasource.username=TU_USUARIO
-   spring.datasource.password=TU_CONTRASEÑA
-   spring.jpa.hibernate.ddl-auto=update
+### Ejecución
+1. Clona el repositorio:
+   ```bash
+   git clone https://github.com/Linx-D-Mos/alura-challenge-literatalura.git
    ```
-4. Listo, sincroniza y ya puedes ejecutar el programa.
+2. Navega al directorio del proyecto:
+   ```bash
+   cd literAlura
+   ```
+3. Ejecuta la aplicación mediante Maven Wrapper:
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+   *Si estás en Windows:*
+   ```cmd
+   mvnw.cmd spring-boot:run
+   ```
+
+4. ¡Interactúa con los menús que aparecerán en la pantalla de la terminal!
